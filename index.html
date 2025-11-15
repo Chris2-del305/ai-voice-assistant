@@ -1,20 +1,263 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My AI Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Voice AI Assistant</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background: purple;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
             text-align: center;
-            padding: 50px;
-            font-family: Arial;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .mic-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+        
+        .mic-btn.listening {
+            background: #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.1em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .chat-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background: #4CAF50;
+            margin-left: 20%;
+            text-align: right;
+        }
+        
+        .ai-message {
+            background: #2196F3;
+            margin-right: 20%;
+        }
+        
+        .message strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .mic-btn {
+                width: 90%;
+                padding: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>🎉 SUCCESS! MY AI IS WORKING!</h1>
-    <p>GitHub Pages is working perfectly!</p>
-    <button onclick="alert('Hello! AI is ready!')">Click to Test</button>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Voice AI Assistant</h1>
+            <p>Your personal AI that listens and talks back!</p>
+        </div>
+        
+        <button id="startBtn" class="mic-btn">
+            🎤 Click to Speak
+        </button>
+        
+        <div class="status" id="status">
+            👆 Tap the button and start speaking!
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="message ai-message">
+                <strong>AI Assistant</strong>
+                Hello! I'm your voice AI. Click the microphone button and try saying: "Hello", "What time is it?", or "How are you?"
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const status = document.getElementById('status');
+        const chatContainer = document.getElementById('chatContainer');
+        
+        // Check if browser supports speech recognition
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            startBtn.disabled = true;
+            startBtn.innerHTML = '❌ Not Supported';
+            status.innerHTML = 'Please use Chrome, Edge, or Safari for voice features.';
+        }
+        
+        // Add message to chat
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            
+            const sender = isUser ? 'You' : 'AI Assistant';
+            messageDiv.innerHTML = `<strong>${sender}</strong>${text}`;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Speak text aloud
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const speech = new SpeechSynthesisUtterance(text);
+                speech.volume = 1;
+                speech.rate = 0.9;
+                speech.pitch = 1;
+                window.speechSynthesis.speak(speech);
+            }
+        }
+        
+        // Process user command
+        function processCommand(speechText) {
+            const text = speechText.toLowerCase();
+            let response;
+            
+            if (text.includes('hello') || text.includes('hi')) {
+                response = "Hello there! 👋 Great to meet you!";
+            } else if (text.includes('time')) {
+                response = `🕒 The time is ${new Date().toLocaleTimeString()}`;
+            } else if (text.includes('how are you')) {
+                response = "I'm doing great! 😊 Thanks for asking!";
+            } else if (text.includes('your name')) {
+                response = "I'm your Voice AI Assistant!";
+            } else if (text.includes('thank')) {
+                response = "You're welcome! 😊";
+            } else if (text.includes('bye')) {
+                response = "Goodbye! 👋 Have a great day!";
+            } else {
+                response = "🤔 I'm still learning! Try: 'hello', 'time', or 'how are you?'";
+            }
+            
+            return response;
+        }
+        
+        // Setup speech recognition
+        startBtn.addEventListener('click', function() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            // Start listening
+            recognition.start();
+            
+            // Update UI
+            startBtn.innerHTML = '🎤 Listening...';
+            startBtn.classList.add('listening');
+            status.innerHTML = '🎤 Speak now...';
+            
+            // When speech is recognized
+            recognition.onresult = function(event) {
+                const speechText = event.results[0][0].transcript;
+                
+                // Add user message
+                addMessage(speechText, true);
+                
+                // Process and get AI response
+                const response = processCommand(speechText);
+                
+                // Add AI response
+                addMessage(response);
+                
+                // Speak the response
+                speakText(response);
+                
+                // Update status
+                status.innerHTML = '✅ Ready for next command!';
+            };
+            
+            // Handle errors
+            recognition.onerror = function(event) {
+                status.innerHTML = `❌ Error: ${event.error}. Tap to try again.`;
+            };
+            
+            // When recognition ends
+            recognition.onend = function() {
+                startBtn.innerHTML = '🎤 Click to Speak';
+                startBtn.classList.remove('listening');
+            };
+        });
+    </script>
 </body>
 </html>
