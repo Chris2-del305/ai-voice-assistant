@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice AI Companion</title>
+    <title>Galaxy Voice AI</title>
     <style>
         * {
             margin: 0;
@@ -12,118 +12,177 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #F4A460 100%);
+            font-family: Arial, sans-serif;
+            background: #000;
             color: white;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Galaxy Background */
+        .galaxy-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(41, 5, 112, 0.8), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(112, 5, 85, 0.6), transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(5, 82, 112, 0.7), transparent 50%),
+                linear-gradient(135deg, #0b0b2d, #000000);
+            z-index: -2;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            z-index: -1;
+            animation: twinkle 4s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
         
         .container {
-            text-align: center;
             max-width: 400px;
             width: 100%;
+            z-index: 1;
         }
         
-        /* African Village Scene */
-        .village-scene {
-            position: relative;
-            margin-bottom: 30px;
-        }
-        
-        .ai-character {
+        /* Boy Character */
+        .boy-container {
             width: 200px;
             height: 200px;
-            margin: 0 auto;
+            margin: 0 auto 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #8B4513, #D2691E);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4em;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 5px solid #5D4037;
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                0 0 50px rgba(255, 255, 255, 0.1),
+                inset 0 0 50px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
         }
         
-        .ai-character::before {
-            content: "👦";
-            font-size: 80px;
+        .boy-face {
+            width: 120px;
+            height: 140px;
+            background: #ffdbac;
+            border-radius: 50%;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
         }
         
-        .ai-character.listening {
-            animation: listeningPulse 2s infinite;
-            box-shadow: 0 0 30px #4CAF50;
+        .boy-face::before,
+        .boy-face::after {
+            content: '';
+            position: absolute;
+            background: #333;
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            top: 50px;
         }
         
-        .ai-character.speaking {
-            animation: speakingGlow 1s infinite alternate;
+        .boy-face::before { left: 25px; }
+        .boy-face::after { right: 25px; }
+        
+        .boy-mouth {
+            position: absolute;
+            width: 30px;
+            height: 10px;
+            background: #333;
+            border-radius: 0 0 15px 15px;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.3s;
         }
         
-        @keyframes listeningPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px #4CAF50; }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px #4CAF50; }
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
-        @keyframes speakingGlow {
-            0% { box-shadow: 0 0 20px #2196F3; }
-            100% { box-shadow: 0 0 40px #2196F3; }
+        .boy-container.listening {
+            animation: pulse 1s infinite;
+            box-shadow: 
+                0 0 80px rgba(76, 175, 80, 0.5),
+                inset 0 0 50px rgba(76, 175, 80, 0.2);
         }
         
-        /* Status Messages */
+        .boy-container.speaking .boy-mouth {
+            animation: talk 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes talk {
+            0% { height: 5px; }
+            100% { height: 15px; }
+        }
+        
+        /* Status */
         .status {
             margin: 20px 0;
             padding: 15px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 1.1em;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            font-size: 16px;
             min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        /* Hidden controls - only tap the character */
-        .hidden-controls {
-            display: none;
-        }
-        
-        /* Conversation History */
-        .conversation {
-            background: rgba(0, 0, 0, 0.3);
+        /* Chat */
+        .chat {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
             margin-top: 20px;
             max-height: 200px;
             overflow-y: auto;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .message {
-            margin: 10px 0;
+            margin: 8px 0;
             padding: 10px 15px;
-            border-radius: 15px;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .user-message {
-            background: rgba(76, 175, 80, 0.3);
-            margin-left: 20%;
-            text-align: right;
-            border: 1px solid rgba(76, 175, 80, 0.5);
-        }
-        
-        .ai-message {
-            background: rgba(33, 150, 243, 0.3);
-            margin-right: 20%;
-            border: 1px solid rgba(33, 150, 243, 0.5);
+            border-radius: 10px;
+            text-align: left;
+            animation: fadeIn 0.3s;
         }
         
         @keyframes fadeIn {
@@ -131,139 +190,119 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Village Elements */
-        .village-text {
-            margin-top: 10px;
-            font-style: italic;
-            opacity: 0.8;
+        .user {
+            background: rgba(76, 175, 80, 0.3);
+            margin-left: 20%;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        
+        .ai {
+            background: rgba(33, 150, 243, 0.3);
+            margin-right: 20%;
+            border: 1px solid rgba(33, 150, 243, 0.5);
         }
         
         .instructions {
-            margin-top: 20px;
-            font-size: 0.9em;
+            margin-top: 15px;
+            font-size: 14px;
             opacity: 0.7;
         }
     </style>
 </head>
 <body>
+    <!-- Galaxy Background -->
+    <div class="galaxy-bg"></div>
+    <div class="stars"></div>
+    
     <div class="container">
-        <!-- African Village AI Character -->
-        <div class="village-scene">
-            <div class="ai-character" id="aiCharacter">
-                <!-- The boy character is created with CSS -->
-            </div>
-            <div class="village-text">
-                Voice of the Village 🌍
+        <!-- Human Boy Character -->
+        <div class="boy-container" id="boy">
+            <div class="boy-face">
+                <div class="boy-mouth"></div>
             </div>
         </div>
         
-        <!-- Status Display -->
+        <!-- Status -->
         <div class="status" id="status">
-            Tap the boy to start speaking with your AI companion
+            Tap the boy to start conversation
         </div>
         
-        <!-- Conversation History -->
-        <div class="conversation" id="conversation">
-            <div class="message ai-message">
-                <strong>Village AI:</strong> Hello! I'm here to listen and help. Tap my image to speak with me.
+        <!-- Chat Messages -->
+        <div class="chat" id="chat">
+            <div class="message ai">
+                <strong>AI:</strong> Hello! I'm here in the galaxy. Tap the boy to talk with me.
             </div>
         </div>
         
         <div class="instructions">
-            Just tap the image above to talk • No buttons needed
-        </div>
-        
-        <!-- Hidden controls for speech recognition -->
-        <div class="hidden-controls">
-            <button id="startBtn">Start</button>
+            Tap → Speak → Listen
         </div>
     </div>
 
     <script>
-        const aiCharacter = document.getElementById('aiCharacter');
+        const boy = document.getElementById('boy');
         const status = document.getElementById('status');
-        const conversation = document.getElementById('conversation');
-        const startBtn = document.getElementById('startBtn');
-        
+        const chat = document.getElementById('chat');
         let isListening = false;
-        
-        // Check if browser supports speech recognition
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            status.innerHTML = "Voice features not supported in this browser. Please use Chrome or Edge.";
-            aiCharacter.style.opacity = "0.5";
+
+        // Check browser support
+        if (!('webkitSpeechRecognition' in window)) {
+            status.textContent = "Voice not supported. Please use Chrome or Edge.";
         }
-        
-        // Add message to conversation
+
+        // Add message to chat
         function addMessage(text, isUser = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-            
-            const sender = isUser ? 'You' : 'Village AI';
-            messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-            
-            conversation.appendChild(messageDiv);
-            conversation.scrollTop = conversation.scrollHeight;
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user' : 'ai'}`;
+            div.innerHTML = `<strong>${isUser ? 'You' : 'AI'}:</strong> ${text}`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
         }
-        
-        // Make AI speak with animations
-        function speakText(text) {
-            if ('speechSynthesis' in window) {
-                // Start speaking animation
-                aiCharacter.classList.remove('listening');
-                aiCharacter.classList.add('speaking');
-                status.innerHTML = "🔄 AI is speaking...";
-                
-                const speech = new SpeechSynthesisUtterance(text);
-                speech.volume = 1;
-                speech.rate = 0.9;
-                speech.pitch = 1;
-                
-                speech.onend = function() {
-                    // Stop speaking animation
-                    aiCharacter.classList.remove('speaking');
-                    status.innerHTML = "✅ Ready to listen again";
-                };
-                
-                window.speechSynthesis.speak(speech);
-            }
-        }
-        
-        // Process user command with African-themed responses
-        function processCommand(speechText) {
-            const text = speechText.toLowerCase();
-            let response;
+
+        // Make AI speak
+        function speak(text) {
+            boy.classList.remove('listening');
+            boy.classList.add('speaking');
+            status.textContent = "🔄 AI is speaking...";
             
-            if (text.includes('hello') || text.includes('hi') || text.includes('greetings')) {
-                response = "Greetings, friend! 🌍 I am the voice of wisdom from the village. How can I assist you today?";
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.volume = 1;
+            speech.rate = 0.9;
+            speech.pitch = 1;
+            
+            speech.onend = () => {
+                boy.classList.remove('speaking');
+                status.textContent = "Tap the boy to talk again";
+            };
+            
+            window.speechSynthesis.speak(speech);
+        }
+
+        // Process commands
+        function processCommand(text) {
+            text = text.toLowerCase();
+            
+            if (text.includes('hello') || text.includes('hi')) {
+                return "Hello! It's beautiful out here in the galaxy, isn't it?";
             } else if (text.includes('time')) {
-                response = `The sun tells me it's ${new Date().toLocaleTimeString()}. Time flows like the river.`;
+                return `According to my cosmic clock, it's ${new Date().toLocaleTimeString()}`;
             } else if (text.includes('how are you')) {
-                response = "I am as peaceful as the baobab tree, standing strong through all seasons. Thank you for asking!";
-            } else if (text.includes('weather')) {
-                response = "Though I cannot see the sky from here, I feel it's a beautiful day for sharing stories and wisdom.";
-            } else if (text.includes('story') || text.includes('tell me')) {
-                response = "Let me share wisdom from the elders: 'The child who is not embraced by the village will burn it down to feel its warmth.'";
-            } else if (text.includes('village') || text.includes('africa')) {
-                response = "In the heart of the village, we learn that community is our greatest strength. Ubuntu: I am because we are.";
-            } else if (text.includes('wisdom') || text.includes('advice')) {
-                response = "Here is wisdom from my ancestors: 'If you want to go fast, go alone. If you want to go far, go together.'";
+                return "I'm feeling stellar! The galaxy always puts me in a good mood!";
+            } else if (text.includes('name')) {
+                return "I'm your cosmic AI companion! You can call me Nova.";
+            } else if (text.includes('galaxy') || text.includes('space')) {
+                return "The universe is full of wonders. Every star has a story to tell!";
             } else if (text.includes('thank')) {
-                response = "You are most welcome! In our village, we say gratitude makes what we have enough.";
+                return "You're welcome! It's my pleasure to chat among the stars!";
             } else if (text.includes('bye') || text.includes('goodbye')) {
-                response = "Go well, my friend! May your journey be safe and your heart be light. Return anytime to share stories!";
-            } else if (text.includes('music') || text.includes('dance')) {
-                response = "Ah, I can almost hear the drums! Music is the soul of our village celebrations.";
-            } else if (text.includes('family') || text.includes('community')) {
-                response = "Family is not just blood. In our village, we say it takes a whole village to raise a child.";
+                return "Goodbye! May your journey through the cosmos be wonderful!";
             } else {
-                response = "I listen with the patience of the ancient baobab. Your words are important to me. Could you share more?";
+                return "I hear you from across the galaxy! Try asking about space or just say hello!";
             }
-            
-            return response;
         }
-        
-        // Start listening when character is tapped
-        aiCharacter.addEventListener('click', function() {
+
+        // Tap to listen
+        boy.addEventListener('click', function() {
             if (isListening) return;
             
             const recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
@@ -271,58 +310,58 @@
             recognition.interimResults = false;
             recognition.lang = 'en-US';
             
-            // Start listening
             recognition.start();
             isListening = true;
+            boy.classList.add('listening');
+            status.textContent = "🎤 Listening across the galaxy... Speak now";
             
-            // Update UI for listening state
-            aiCharacter.classList.add('listening');
-            aiCharacter.classList.remove('speaking');
-            status.innerHTML = "🎤 Listening... Speak now, I'm listening carefully";
-            
-            // When speech is recognized
             recognition.onresult = function(event) {
-                const speechText = event.results[0][0].transcript;
+                const speech = event.results[0][0].transcript;
+                addMessage(speech, true);
                 
-                // Add user message
-                addMessage(speechText, true);
-                
-                // Process and get AI response
-                const response = processCommand(speechText);
-                
-                // Add AI response
+                const response = processCommand(speech);
                 addMessage(response);
-                
-                // Speak the response
-                speakText(response);
+                speak(response);
             };
             
-            // Handle errors
-            recognition.onerror = function(event) {
-                status.innerHTML = "I didn't quite catch that. Please tap me again and speak clearly.";
-                aiCharacter.classList.remove('listening');
+            recognition.onerror = function() {
+                status.textContent = "Cosmic interference! Tap the boy to try again.";
+                boy.classList.remove('listening');
                 isListening = false;
             };
             
-            // When recognition ends
             recognition.onend = function() {
-                aiCharacter.classList.remove('listening');
+                boy.classList.remove('listening');
                 isListening = false;
             };
         });
-        
-        // Add hover effect
-        aiCharacter.addEventListener('mouseenter', function() {
-            if (!isListening) {
-                status.innerHTML = "Tap to speak with your AI companion";
-            }
-        });
-        
-        // Initial welcome message after delay
-        setTimeout(() => {
-            if (conversation.children.length === 1) {
-                addMessage("I am here to listen and share wisdom from the heart of Africa. Your voice matters to me.");
-            }
+
+        // Add shooting stars occasionally
+        setInterval(() => {
+            const star = document.createElement('div');
+            star.style.cssText = `
+                position: fixed;
+                top: ${Math.random() * 100}%;
+                left: -50px;
+                width: 2px;
+                height: 2px;
+                background: white;
+                box-shadow: 0 0 10px white;
+                animation: shoot 2s linear;
+                z-index: 0;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shoot {
+                    0% { transform: translateX(0) translateY(0); opacity: 1; }
+                    100% { transform: translateX(100vw) translateY(100px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 2000);
         }, 3000);
     </script>
 </body>
