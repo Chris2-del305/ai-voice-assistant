@@ -17,6 +17,25 @@
             color: white;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background Elements */
+        .bg-robot {
+            position: fixed;
+            bottom: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            opacity: 0.1;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
         
         .container {
@@ -28,6 +47,8 @@
             padding: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
         }
         
         .header {
@@ -38,10 +59,56 @@
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* AI Character */
+        .ai-character {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .robot-avatar {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            animation: bounce 2s infinite;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .robot-avatar.talking {
+            animation: talk 0.5s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes talk {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        
+        .robot-name {
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
         }
         
         .mic-btn {
-            background: #4CAF50;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
             color: white;
             border: none;
             padding: 20px 40px;
@@ -49,14 +116,21 @@
             border-radius: 50px;
             cursor: pointer;
             display: block;
-            margin: 30px auto;
+            margin: 20px auto;
             width: 200px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .mic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
         
         .mic-btn.listening {
-            background: #ff4444;
+            background: linear-gradient(45deg, #ff4444, #cc0000);
             animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
         }
         
         @keyframes pulse {
@@ -72,6 +146,7 @@
             padding: 15px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
+            border-left: 4px solid #4CAF50;
         }
         
         .chat-container {
@@ -79,7 +154,7 @@
             border-radius: 15px;
             padding: 20px;
             margin-top: 20px;
-            max-height: 400px;
+            max-height: 300px;
             overflow-y: auto;
         }
         
@@ -96,14 +171,16 @@
         }
         
         .user-message {
-            background: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             margin-left: 20%;
             text-align: right;
+            border-bottom-right-radius: 5px;
         }
         
         .ai-message {
-            background: #2196F3;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
             margin-right: 20%;
+            border-bottom-left-radius: 5px;
         }
         
         .message strong {
@@ -111,6 +188,21 @@
             margin-bottom: 5px;
             font-size: 0.9em;
             opacity: 0.8;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9em;
         }
         
         @media (max-width: 600px) {
@@ -127,14 +219,31 @@
                 width: 90%;
                 padding: 18px;
             }
+            
+            .robot-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5em;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Animated Background Robot -->
+    <div class="bg-robot">🤖</div>
+    
     <div class="container">
         <div class="header">
             <h1>🎤 Voice AI Assistant</h1>
             <p>Your personal AI that listens and talks back!</p>
+        </div>
+        
+        <!-- AI Character -->
+        <div class="ai-character">
+            <div class="robot-avatar" id="robotAvatar">
+                🤖
+            </div>
+            <div class="robot-name">AI Assistant</div>
         </div>
         
         <button id="startBtn" class="mic-btn">
@@ -148,8 +257,15 @@
         <div class="chat-container" id="chatContainer">
             <div class="message ai-message">
                 <strong>AI Assistant</strong>
-                Hello! I'm your voice AI. Click the microphone button and try saying: "Hello", "What time is it?", or "How are you?"
+                Hello! I'm your voice AI with a cool animated character! Click the microphone and try talking to me!
             </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">🎤 Voice Control</div>
+            <div class="feature">🤖 Animated AI</div>
+            <div class="feature">💬 Smart Chat</div>
+            <div class="feature">📱 Mobile Ready</div>
         </div>
     </div>
 
@@ -157,6 +273,7 @@
         const startBtn = document.getElementById('startBtn');
         const status = document.getElementById('status');
         const chatContainer = document.getElementById('chatContainer');
+        const robotAvatar = document.getElementById('robotAvatar');
         
         // Check if browser supports speech recognition
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -177,13 +294,28 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
         
+        // Make robot talk animation
+        function startTalking() {
+            robotAvatar.classList.add('talking');
+        }
+        
+        function stopTalking() {
+            robotAvatar.classList.remove('talking');
+        }
+        
         // Speak text aloud
         function speakText(text) {
             if ('speechSynthesis' in window) {
+                startTalking();
                 const speech = new SpeechSynthesisUtterance(text);
                 speech.volume = 1;
                 speech.rate = 0.9;
                 speech.pitch = 1;
+                
+                speech.onend = function() {
+                    stopTalking();
+                };
+                
                 window.speechSynthesis.speak(speech);
             }
         }
@@ -194,19 +326,37 @@
             let response;
             
             if (text.includes('hello') || text.includes('hi')) {
-                response = "Hello there! 👋 Great to meet you!";
+                response = "Hello there! 👋 I'm your animated AI assistant! How can I help you today?";
             } else if (text.includes('time')) {
-                response = `🕒 The time is ${new Date().toLocaleTimeString()}`;
+                response = `🕒 The current time is ${new Date().toLocaleTimeString()}`;
+            } else if (text.includes('date')) {
+                response = `📅 Today is ${new Date().toLocaleDateString()}`;
             } else if (text.includes('how are you')) {
-                response = "I'm doing great! 😊 Thanks for asking!";
+                response = "I'm feeling fantastic! 😊 Thanks for asking! I love being your AI assistant!";
             } else if (text.includes('your name')) {
-                response = "I'm your Voice AI Assistant!";
+                response = "I'm your animated Voice AI Assistant! You can call me chriswats!";
+            } else if (text.includes('weather')) {
+                response = "🌤️ I don't have live weather data yet, but I can tell you it's a perfect day for chatting with me!";
+            } else if (text.includes('joke')) {
+                const jokes = [
+                    "Why don't robots have any brothers? Because they have transistors!",
+                    "Why was the robot so tired? Because he had a hard drive!",
+                    "What do you call a robot that always takes the longest route? R2-detour!",
+                    "Why did the robot go on a diet? He had too many bytes!"
+                ];
+                response = `😂 ${jokes[Math.floor(Math.random() * jokes.length)]}`;
+            } else if (text.includes('dance')) {
+                response = "💃 I'm dancing! Well, as much as a cartoon robot can dance!";
+            } else if (text.includes('sing')) {
+                response = "🎵 Beep boop bop! I'm singing in my robot voice! 🎶";
             } else if (text.includes('thank')) {
-                response = "You're welcome! 😊";
-            } else if (text.includes('bye')) {
-                response = "Goodbye! 👋 Have a great day!";
+                response = "You're very welcome! 😊 I'm always happy to help!";
+            } else if (text.includes('love you')) {
+                response = "Aww, that's sweet! 💖 I think you're pretty awesome too!";
+            } else if (text.includes('bye') || text.includes('goodbye')) {
+                response = "Goodbye! 👋 It was wonderful talking with you! Come back soon to chat with your robot friend!";
             } else {
-                response = "🤔 I'm still learning! Try: 'hello', 'time', or 'how are you?'";
+                response = "🤔 I'm learning new things every day! Try asking about time, date, jokes, or just say hello!";
             }
             
             return response;
@@ -225,7 +375,8 @@
             // Update UI
             startBtn.innerHTML = '🎤 Listening...';
             startBtn.classList.add('listening');
-            status.innerHTML = '🎤 Speak now...';
+            status.innerHTML = '🎤 Speak now... I\'m listening!';
+            robotAvatar.style.background = 'linear-gradient(135deg, #ff4444, #cc0000)';
             
             // When speech is recognized
             recognition.onresult = function(event) {
@@ -245,19 +396,29 @@
                 
                 // Update status
                 status.innerHTML = '✅ Ready for next command!';
+                robotAvatar.style.background = 'linear-gradient(135deg, #4CAF50, #2196F3)';
             };
             
             // Handle errors
             recognition.onerror = function(event) {
                 status.innerHTML = `❌ Error: ${event.error}. Tap to try again.`;
+                robotAvatar.style.background = 'linear-gradient(135deg, #4CAF50, #2196F3)';
             };
             
             // When recognition ends
             recognition.onend = function() {
                 startBtn.innerHTML = '🎤 Click to Speak';
                 startBtn.classList.remove('listening');
+                robotAvatar.style.background = 'linear-gradient(135deg, #4CAF50, #2196F3)';
             };
         });
+        
+        // Add some fun robot animations
+        setInterval(() => {
+            if (!robotAvatar.classList.contains('talking')) {
+                robotAvatar.style.transform = `scale(${1 + Math.random() * 0.1})`;
+            }
+        }, 3000);
     </script>
 </body>
 </html>
